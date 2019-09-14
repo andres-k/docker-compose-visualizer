@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "file": "bundle.css",
+  "sources": [
+    "../src/App.svelte"
+  ],
+  "sourcesContent": [
+    "<script>\n  import { yamlToGraph, initGraph } from \"./utils.js\";\n  let isDraggedOver = false;\n  let hasFile;\n  let cytoscape;\n  $: hasfile = false;\n\n  function handleDrop(event) {\n    let dt = event.dataTransfer;\n    let file = dt.files[0];\n\n    let reader = new FileReader();\n\n    reader.onload = function(e) {\n      // The file's text will be printed here\n      hasFile = true;\n      let text = e.target.result;\n      let eles = yamlToGraph(text);\n      cytoscape = initGraph(eles);\n    };\n\n    reader.readAsText(file);\n  }\n\n  function exportPng() {\n    let element = document.createElement(\"a\");\n    element.style = \"display: none;\";\n    document.body.appendChild(element);\n\n    let image = cytoscape.png({ output: \"blob\", bg: \"white\", full: true });\n    let file = new Blob([image], { type: \"image/png\" });\n    element.href = window.URL.createObjectURL(file);\n    element.download = \"docker-compose.png\";\n    element.click();\n    document.body.removeChild(element);\n  }\n</script>\n\n<style>\n  html,\n  body,\n  .container,\n  .row {\n    height: 100%;\n  }\n\n  .dropbox {\n    background: #7fdbff;\n    height: 250px;\n  }\n\n  .dragged-over {\n    background: #39cccc;\n  }\n\n  #cytoscape {\n    height: 100%;\n    width: 100%;\n  }\n</style>\n\n<div class=\"container\">\n  <div class=\"row row-center\">\n    {#if !hasFile}\n      <div\n        class=\"column column-50 column-offset-25 dropbox\"\n        class:dragged-over={isDraggedOver}\n        on:dragenter|preventDefault={() => (isDraggedOver = true)}\n        on:dragleave|preventDefault={() => (isDraggedOver = false)}\n        on:dragover|preventDefault\n        on:drop|preventDefault={handleDrop}>\n        <h3>Drop docker-compose.yml here</h3>\n      </div>\n    {:else}\n      <button on:click={exportPng}>Export png</button>\n    {/if}\n    <div id=\"cytoscape\" />\n\n  </div>\n</div>\n"
+  ],
+  "names": [],
+  "mappings": "AAyCE,yBAAU,CACV,IAAI,eAAC,CAAC,AACJ,MAAM,CAAE,IAAI,AACd,CAAC,AAED,QAAQ,eAAC,CAAC,AACR,UAAU,CAAE,OAAO,CACnB,MAAM,CAAE,KAAK,AACf,CAAC,AAED,aAAa,eAAC,CAAC,AACb,UAAU,CAAE,OAAO,AACrB,CAAC,AAED,UAAU,eAAC,CAAC,AACV,MAAM,CAAE,IAAI,CACZ,KAAK,CAAE,IAAI,AACb,CAAC"
+}
